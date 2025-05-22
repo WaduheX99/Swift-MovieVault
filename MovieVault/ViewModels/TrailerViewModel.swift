@@ -20,9 +20,9 @@ class TrailerViewModel: ObservableObject {
         self.movieService = movieService
     }
     
-    func fetchTrailerfromID(id: Int) {
+    func fetchMovieTrailer(id: Int) {
         isLoading = true
-        movieService.fetchMovieTrailers(movieId: id)
+        movieService.fetchMovieTrailer(movieId: id)
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onNext: { [weak self] trailers in
