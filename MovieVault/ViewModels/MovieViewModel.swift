@@ -14,6 +14,10 @@ class MovieViewModel : ObservableObject {
     private var disposeBag: DisposeBag = DisposeBag()
     
     @Published var popularMovieList: [Movie] = []
+    @Published var nowPlayingList: [Movie] = []
+    @Published var topRatedList: [Movie] = []
+    @Published var trendingWeeklyList: [Movie] = []
+    @Published var allMovies: [Movie] = []
     
     @Published var failedFetchMessage: String?
     @Published var successMessage: String?
@@ -26,13 +30,11 @@ class MovieViewModel : ObservableObject {
         self.movieService = movieService
     }
     
-//    @Published var popularMovieList: [Movie] = []
-    @Published var nowPlayingList: [Movie] = []
-    @Published var topRatedList: [Movie] = []
-    @Published var trendingWeeklyList: [Movie] = []
+    private var currentPage = 2
+    private var isLoadingMore = false
 
-    func fetchMovies(for category: MovieListCategory) {
-        movieService.fetchMovies(for: category)
+    func fetchMoviesByCategory(for category: MovieListCategory) {
+        movieService.fetchMoviesByCategory(for: category)
             .do(
                 onSubscribe: { [weak self] in
                     self?.isLoading = true
@@ -53,37 +55,42 @@ class MovieViewModel : ObservableObject {
                 case .trendingWeekly:
                     self.trendingWeeklyList = list
                 }
-            },
-               onError: { error in
-                   if let nsError = error as NSError?{
-                       if nsError.code == 401 {
-                           print("Status code: \(nsError.code)")
-                           self.alertData = AlertData(
-                               statusCode: nsError.code,
-                               statusMessage: nsError.localizedDescription
-                           )
-                           self.showAlert = true
-                       }
-                       else {
-                           self.failedFetchMessage = nsError.domain
-                       }
-                   }
-               }
-           )
+            }, onError: { [weak self] error in
+                self?.handleError(error)
+            })
            .disposed(by: disposeBag)
     }
+
+    func fetchAllMoviesNextPage() {
+        guard !isLoadingMore else { return }
+        isLoadingMore = true
+        isLoading = true
+
+        movieService.fetchAllMovies(page: currentPage)
+            .subscribe(onNext: { [weak self] newMovies in
+                guard let self = self else { return }
+                self.allMovies.append(contentsOf: newMovies)
+                self.currentPage += 1
+                self.isLoadingMore = false
+                self.isLoading = false
+            }, onError: { [weak self] error in
+                self?.handleError(error)
+            })
+            .disposed(by: disposeBag)
+    }
+
     
     //MARK: HANDLE ERROR
-//    private func handleError(_ error: Error) {
-//        if let nsError = error as NSError? {
-//            if nsError.code == 401 {
-//                self.alertData = AlertData(statusCode: nsError.code, statusMessage: nsError.localizedDescription)
-//                self.showAlert = true
-//            } else {
-//                self.failedFetchMessage = nsError.domain
-//            }
-//        }
-//    }
+    private func handleError(_ error: Error) {
+        if let nsError = error as NSError? {
+            if nsError.code == 401 {
+                self.alertData = AlertData(statusCode: nsError.code, statusMessage: nsError.localizedDescription)
+                self.showAlert = true
+            } else {
+                self.failedFetchMessage = nsError.domain
+            }
+        }
+    }
     
     
     
