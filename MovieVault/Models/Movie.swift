@@ -45,3 +45,9 @@ struct Movie: Decodable, Encodable, Identifiable {
         case voteCount = "vote_count"
     }
 }
+
+extension Movie {
+    var genreNames: [String] {
+        genreIDs.compactMap { GenreHelper.genreMap[$0] }
+    }
+}

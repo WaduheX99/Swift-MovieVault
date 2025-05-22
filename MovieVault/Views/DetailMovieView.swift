@@ -39,8 +39,8 @@ struct DetailMovieView: View {
                     Text("Rating: \(String(format: "%.1f", movie.voteAverage)) (\(movie.voteCount) votes)")
                         .font(.subheadline)
 
-                    if !movie.genreIDs.isEmpty {
-                        Text("Genres: \(movie.genreIDs.map { String($0) }.joined(separator: ", "))")
+                    if !movie.genreNames.isEmpty {
+                        Text("Genres: \(movie.genreNames.joined(separator: ", "))")
                             .font(.subheadline)
                     }
 
