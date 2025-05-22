@@ -34,7 +34,7 @@ struct MovieCategorySection: View {
                     .padding(.horizontal, 16)
                 }
             }
-            .frame(height: 250) // tetap cukup untuk poster + title
+            .frame(height: 250)
         }
     }
 }

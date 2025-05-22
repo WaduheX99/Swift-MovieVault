@@ -21,7 +21,7 @@ class HttpHelper{
         return Observable.create { observer in
 
             let apiKey = Secrets.apiKey
-            let urlString = "https://api.themoviedb.org/3\(endpoint)?api_key=\(apiKey)&page=1"
+            let urlString = "https://api.themoviedb.org/3\(endpoint)api_key=\(apiKey)"
             
             let request = AF.request(urlString, method: method, parameters: parameters, headers: headers)
                 .validate()
