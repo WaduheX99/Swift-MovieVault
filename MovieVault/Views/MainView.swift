@@ -16,38 +16,35 @@ struct MainView: View {
 
     var body: some View {
         NavigationView {
-            List(viewModel.popularMovieList) { movie in
-                NavigationLink(destination: DetailMovieView(movie: movie)) {
-                    HStack(alignment: .top) {
-                        if let posterPath = movie.posterPath,
-                           let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
-                            AsyncImage(url: url) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFit()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 60, height: 90)
-                            .cornerRadius(8)
-                        }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    
+                    // Section: Popular
+                    MovieCategorySection(title: "Popular", movies: viewModel.popularMovieList)
 
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(movie.title)
-                                .font(.headline)
-                            Text(movie.releaseDate)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    }
+                    // Section: Now Playing
+                    MovieCategorySection(title: "Now Playing", movies: viewModel.nowPlayingList)
+                    
+                    // Section: Top Rated
+                    MovieCategorySection(title: "Top Picks", movies: viewModel.topRatedList)
+                    
+                    // Section: Trending This Week
+                    MovieCategorySection(title: "Weekly Trending", movies: viewModel.trendingWeeklyList)
                 }
+                .padding(.vertical)
             }
-            .navigationTitle("Trending Now")
+            .navigationTitle("Movie Vault")
             .onAppear {
-                viewModel.fetchPopularFilms()
+                viewModel.fetchMovies(for: .popular)
+                viewModel.fetchMovies(for: .nowPlaying)
+                viewModel.fetchMovies(for: .topRated)
+                viewModel.fetchMovies(for: .trendingWeekly)
             }
             .refreshable {
-                viewModel.fetchPopularFilms()
+                viewModel.fetchMovies(for: .popular)
+                viewModel.fetchMovies(for: .nowPlaying)
+                viewModel.fetchMovies(for: .topRated)
+                viewModel.fetchMovies(for: .trendingWeekly)
             }
         }
     }
