@@ -52,10 +52,10 @@ struct MovieCardView: View {
                     .foregroundColor(.primary)
                     .fontWeight(.semibold)
                     .lineLimit(2)
-                    .frame(height: 40, alignment: .top) // menjaga tinggi tetap
+                    .frame(height: 40, alignment: .top)
             }
             .frame(width: width)
-            .alignmentGuide(.top) { _ in 0 } // pastikan sejajar atas
+            .alignmentGuide(.top) { _ in 0 }
         }
         .buttonStyle(PlainButtonStyle())
     }

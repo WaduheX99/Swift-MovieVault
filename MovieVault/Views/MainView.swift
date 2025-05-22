@@ -19,32 +19,39 @@ struct MainView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     
-                    // Section: Popular
-                    MovieCategorySection(title: "Popular", movies: viewModel.popularMovieList)
-
                     // Section: Now Playing
                     MovieCategorySection(title: "Now Playing", movies: viewModel.nowPlayingList)
+                    
+                    // Section: Popular
+                    MovieCategorySection(title: "Popular", movies: viewModel.popularMovieList)
                     
                     // Section: Top Rated
                     MovieCategorySection(title: "Top Picks", movies: viewModel.topRatedList)
                     
                     // Section: Trending This Week
                     MovieCategorySection(title: "Weekly Trending", movies: viewModel.trendingWeeklyList)
+                    
+                    // Section : Discover More
+                    AllMoviesSection(viewModel: viewModel)
                 }
                 .padding(.vertical)
             }
             .navigationTitle("Movie Vault")
             .onAppear {
-                viewModel.fetchMovies(for: .popular)
-                viewModel.fetchMovies(for: .nowPlaying)
-                viewModel.fetchMovies(for: .topRated)
-                viewModel.fetchMovies(for: .trendingWeekly)
+                viewModel.fetchMoviesByCategory(for: .popular)
+                viewModel.fetchMoviesByCategory(for: .nowPlaying)
+                viewModel.fetchMoviesByCategory(for: .topRated)
+                viewModel.fetchMoviesByCategory(for: .trendingWeekly)
+                viewModel.fetchAllMoviesNextPage()
+
             }
             .refreshable {
-                viewModel.fetchMovies(for: .popular)
-                viewModel.fetchMovies(for: .nowPlaying)
-                viewModel.fetchMovies(for: .topRated)
-                viewModel.fetchMovies(for: .trendingWeekly)
+                viewModel.fetchMoviesByCategory(for: .popular)
+                viewModel.fetchMoviesByCategory(for: .nowPlaying)
+                viewModel.fetchMoviesByCategory(for: .topRated)
+                viewModel.fetchMoviesByCategory(for: .trendingWeekly)
+                viewModel.fetchAllMoviesNextPage()
+
             }
         }
     }
