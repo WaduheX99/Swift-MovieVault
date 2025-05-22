@@ -11,6 +11,7 @@ struct DetailMovieView: View {
     let movie: Movie
     
     @StateObject var trailerViewModel = TrailerViewModel(movieService: APIServiceImpl())
+    @StateObject private var reviewViewModel = UserReviewViewModel(movieService: APIServiceImpl())
 
     var body: some View {
         ScrollView {
@@ -62,13 +63,47 @@ struct DetailMovieView: View {
                         .foregroundColor(.secondary)
                         .padding(.horizontal)
                 }
+                
+                if reviewViewModel.isLoading {
+                    ProgressView()
+                        .frame(height: 150)
+                } else if reviewViewModel.reviews.isEmpty {
+                    Text("No reviews available")
+                        .foregroundColor(.secondary)
+                        .padding()
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            ForEach(reviewViewModel.reviews.indices, id: \.self) { index in
+                                let review = reviewViewModel.reviews[index]
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("⭐️ \(review.authorDetails.rating ?? 0.0, specifier: "%.1f")")
+                                        .font(.subheadline)
+                                    Text("by \(review.author)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(review.content)
+                                        .lineLimit(6)
+                                        .font(.body)
+                                }
+                                .padding()
+                                .frame(width: 300)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
             }
         }
         .onAppear {
-            trailerViewModel.fetchTrailerfromID(id: movie.id)
+            trailerViewModel.fetchMovieTrailer(id: movie.id)
+            reviewViewModel.fetchMovieReviews(id: movie.id)
         }
         .refreshable {
-            trailerViewModel.fetchTrailerfromID(id: movie.id)
+            trailerViewModel.fetchMovieTrailer(id: movie.id)
+            reviewViewModel.fetchMovieReviews(id: movie.id)
         }
         .navigationTitle("Movie Details")
         .navigationBarTitleDisplayMode(.inline)
