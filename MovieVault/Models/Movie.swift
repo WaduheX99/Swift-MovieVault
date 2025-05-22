@@ -12,7 +12,7 @@ struct MovieResponse: Decodable {
     let results: [Movie]
 }
 
-struct Movie: Decodable, Encodable, Identifiable {
+struct Movie: Decodable, Encodable, Identifiable, Equatable {
     let adult: Bool
     let backdropPath: String?
     let genreIDs: [Int]
