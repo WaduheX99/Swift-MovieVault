@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct DetailMovieView: View {
+    @Environment(\.dismiss) var dismiss
+    
     let movie: Movie
     
     @StateObject var trailerViewModel = TrailerViewModel(movieService: APIServiceImpl())
@@ -63,7 +65,7 @@ struct DetailMovieView: View {
                     }
                 }
 
-                // MARK: - Title, Duration & Year
+                // MARK: - Title & Year
                 VStack(alignment: .leading, spacing: 8) {
                     Text(movie.title)
                         .font(.title)
@@ -94,32 +96,66 @@ struct DetailMovieView: View {
                 }
 
                 // MARK: - Overview Section
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Overview")
-                        .font(.headline)
-
-                    Text(movie.overview)
-                        .font(.caption)
-                        .foregroundColor(.primary)
+                VStack {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(alignment: .top) {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(.orange))
+                                .frame(width: 4)
+                                .frame(maxHeight: .infinity)
+                            
+                            Text("Overview")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                        }
+                        Text(movie.overview)
+                            .font(.footnote)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
+                .padding(.top, 20)
 
                 // MARK: - Rating & Reviews
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("User Review")
-                        .font(.headline)
-                        .padding(.horizontal)
-
-                    // ⭐️ Rating besar
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("⭐️ \(movie.voteAverage, specifier: "%.1f")")
-                            .font(.system(size: 36, weight: .bold))
-
-                        Text("\(movie.voteCount) total votes")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    HStack(alignment: .top) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color(.orange))
+                            .frame(width: 4)
+                            .frame(maxHeight: .infinity)
+                            .padding(.top, 2)
+                        
+                        Text("User Reviews")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                        
                     }
                     .padding(.horizontal)
+                    
+                    HStack {
+                        Spacer()
+
+                        VStack(spacing: 6) {
+                            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                                Text("⭐️")
+                                    .font(.system(size: 32))
+                                Text(formatRating(movie.voteAverage))
+                                    .font(.system(size: 32, weight: .bold))
+                                Text("/ 10")
+                                    .font(.body)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.secondary)
+                            }
+
+                            Text("\(movie.voteCount) Votes")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+
 
                     Text("Featured Reviews")
                         .font(.subheadline)
@@ -156,7 +192,7 @@ struct DetailMovieView: View {
 
                                             Spacer()
 
-                                            Text("⭐️ \(review.authorDetails.rating ?? 0.0, specifier: "%.1f")")
+                                            Text("⭐️ \(formatRating(review.authorDetails.rating ?? 0.0))")
                                                 .font(.footnote)
                                                 .foregroundColor(.primary)
                                                 .padding(.horizontal, 8)
@@ -177,8 +213,10 @@ struct DetailMovieView: View {
                         }
                     }
                 }
-
+                .padding(.top, 20)
+                
             }
+            .padding(.bottom, 50)
         }
         .onAppear {
             trailerViewModel.fetchMovieTrailer(id: movie.id)
@@ -188,8 +226,29 @@ struct DetailMovieView: View {
             trailerViewModel.fetchMovieTrailer(id: movie.id)
             reviewViewModel.fetchMovieReviews(id: movie.id)
         }
-        .navigationTitle("Movie Details")
+        .navigationTitle(movie.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    self.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.primary)
+                }
+            }
+        }
+        .navigationBarBackButtonHidden()
     }
+    
+    // MARK: Decimal Converter (, to .)
+    func formatRating(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.maximumFractionDigits = 1
+        formatter.minimumFractionDigits = 1
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
+
 }
 

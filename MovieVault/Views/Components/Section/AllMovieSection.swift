@@ -23,10 +23,17 @@ struct AllMoviesSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Discover More")
-                .font(.title2)
-                .bold()
-                .padding(.horizontal)
+            HStack(alignment: .top) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(.orange))
+                    .frame(width: 4)
+                    .frame(maxHeight: .infinity)
+                
+                Text("Discover More")
+                    .font(.title2)
+                    .bold()
+            }
+            .padding(.horizontal)
 
             LazyVGrid(columns: columns, spacing: spacing) {
                 let movies = paddedMovies()

@@ -13,10 +13,17 @@ struct MovieCategorySection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(title)
-                .font(.title2)
-                .bold()
-                .padding(.horizontal)
+            HStack(alignment: .top) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(.orange))
+                    .frame(width: 4)
+                    .frame(maxHeight: .infinity)
+                
+                Text(title)
+                    .font(.title2)
+                    .bold()
+            }
+            .padding(.horizontal)
 
             GeometryReader { geometry in
                 let screenWidth = geometry.size.width

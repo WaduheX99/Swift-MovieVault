@@ -20,7 +20,7 @@ struct UserReview: Codable, Identifiable {
 
     enum CodingKeys: String, CodingKey {
         case id, author, content
-        case authorDetails = "author_details" // ← FIX penting
+        case authorDetails = "author_details"
     }
 
     struct AuthorDetails: Codable {
