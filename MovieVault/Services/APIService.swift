@@ -11,8 +11,8 @@ import RxSwift
 
 protocol APIService {
     func fetchPopularFilms() -> Observable<[Movie]>
-    func fetchMovieTrailers(movieId: Int) -> Observable<[Trailer]>
-
+    func fetchMovieTrailer(movieId: Int) -> Observable<[Trailer]>
+    func fetchMovieReviews(movieId: Int) -> Observable<[UserReview]>
 }
 
 class APIServiceImpl : APIService {
@@ -25,7 +25,7 @@ class APIServiceImpl : APIService {
         }
     }
     
-    func fetchMovieTrailers(movieId: Int) -> Observable<[Trailer]> {
+    func fetchMovieTrailer(movieId: Int) -> Observable<[Trailer]> {
         let endpoint = "/movie/\(movieId)/videos"
         let response: Observable<TrailerResponse?> = HttpHelper.request(endpoint, method: .get)
         
@@ -36,4 +36,10 @@ class APIServiceImpl : APIService {
         }
     }
     
+    func fetchMovieReviews(movieId: Int) -> Observable<[UserReview]> {
+        let endpoint = "/movie/\(movieId)/reviews"
+        let response: Observable<UserReviewResponse?> = HttpHelper.request(endpoint, method: .get)
+        
+        return response.map { $0?.results.prefix(5).map { $0 } ?? [] }
+    }
 }
