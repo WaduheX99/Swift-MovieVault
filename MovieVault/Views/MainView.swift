@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     
+    @StateObject var networkMonitor = NetworkHelper()
     @StateObject var viewModel = MovieViewModel(movieService: APIServiceImpl())
     
     @State private var movies: [Movie] = []
@@ -17,39 +18,67 @@ struct MainView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    
-                    // Big Carousel
-                    if !viewModel.popularMovieList.isEmpty {
-                        BigMovieCarousel(movies: Array(viewModel.popularMovieList.shuffled().prefix(5)))
-                            .frame(height: 450)
+            Group{
+                if networkMonitor.isConnected {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            
+                            // Big Carousel
+                            if !viewModel.popularMovieList.isEmpty {
+                                BigMovieCarousel(movies: Array(viewModel.popularMovieList.shuffled().prefix(5)))
+                                    .frame(height: 450)
+                            }
+
+                            // Section: Now Playing
+                            MovieCategorySection(title: "Now Playing", movies: viewModel.nowPlayingList)
+                                .padding(.top, 60)
+                            
+                            // Section: Top Rated
+                            MovieCategorySection(title: "Top Picks", movies: viewModel.topRatedList)
+                            
+                            // Section: Trending This Week
+                            MovieCategorySection(title: "Weekly Trending", movies: viewModel.trendingWeeklyList)
+                            
+                            // Section: Upcoming
+                            MovieCategorySection(title: "Upcoming", movies: viewModel.upcomingList)
+                            
+                            // Section : Discover More
+                            AllMoviesSection(viewModel: viewModel)
+                        }
+                        
+                        NavigationLink(destination: SearchView(viewModel: viewModel),
+                                       isActive: $isSearching) {
+                            EmptyView()
+                        }
+                        .hidden()
+                        
+                        
+
                     }
-
-                    
-                    // Section: Now Playing
-                    MovieCategorySection(title: "Now Playing", movies: viewModel.nowPlayingList)
-                        .padding(.top, 60)
-                    
-                    // Section: Top Rated
-                    MovieCategorySection(title: "Top Picks", movies: viewModel.topRatedList)
-                    
-                    // Section: Trending This Week
-                    MovieCategorySection(title: "Weekly Trending", movies: viewModel.trendingWeeklyList)
-                    
-                    // Section: Upcoming
-                    MovieCategorySection(title: "Upcoming", movies: viewModel.upcomingList)
-                    
-                    // Section : Discover More
-                    AllMoviesSection(viewModel: viewModel)
                 }
-                
-                NavigationLink(destination: SearchView(viewModel: viewModel),
-                               isActive: $isSearching) {
-                    EmptyView()
-                }
-                .hidden()
+                else {
+                    VStack(spacing: 16) {
+                        Spacer()
+                        
+                        Image(systemName: "wifi.slash")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 60, height: 60)
+                            .foregroundColor(Color(.orange))
 
+                        Text("You're offline")
+                            .font(.title2.bold())
+
+                        Text("Turn on mobile data or connect to a Wi-Fi")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
             .background(Color.clear)
             .navigationBarTitleDisplayMode(.large)
@@ -70,26 +99,21 @@ struct MainView: View {
                     }
                 }
             }
-
-
             .onAppear {
-                viewModel.fetchMoviesByCategory(for: .popular)
-                viewModel.fetchMoviesByCategory(for: .nowPlaying)
-                viewModel.fetchMoviesByCategory(for: .topRated)
-                viewModel.fetchMoviesByCategory(for: .trendingWeekly)
-                viewModel.fetchMoviesByCategory(for: .upcoming)
-                viewModel.fetchAllMoviesNextPage()
-
+                fetchContents()
             }
             .refreshable {
-                viewModel.fetchMoviesByCategory(for: .popular)
-                viewModel.fetchMoviesByCategory(for: .nowPlaying)
-                viewModel.fetchMoviesByCategory(for: .topRated)
-                viewModel.fetchMoviesByCategory(for: .trendingWeekly)
-                viewModel.fetchMoviesByCategory(for: .upcoming)
-                viewModel.fetchAllMoviesNextPage()
-
+                fetchContents()
             }
         }
+    }
+    
+    private func fetchContents() {
+        viewModel.fetchMoviesByCategory(for: .popular)
+        viewModel.fetchMoviesByCategory(for: .nowPlaying)
+        viewModel.fetchMoviesByCategory(for: .topRated)
+        viewModel.fetchMoviesByCategory(for: .trendingWeekly)
+        viewModel.fetchMoviesByCategory(for: .upcoming)
+        viewModel.fetchAllMoviesNextPage()
     }
 }
