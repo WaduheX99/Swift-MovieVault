@@ -15,24 +15,44 @@ struct BigMovieCarousel: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             GeometryReader { geo in
-                if let backdropPath = movies[safe: currentIndex]?.backdropPath,
-                   let url = URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath)") {
-                    AsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
+                if let movie = movies[safe: currentIndex] {
+                    if let backdropPath = movie.backdropPath,
+                       let url = URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath)") {
+                        // Use backdrop if available
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geo.size.width, height: geo.size.height + 200)
+                                .clipped()
+                                .blur(radius: 25)
+                                .overlay(Color.black.opacity(0.5))
+                                .offset(y: -200)
+                        } placeholder: {
+                            Color.black.opacity(0.5)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
+                    } else if let posterPath = movie.posterPath,
+                              let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
+                        // Fallback to blurred poster if no backdrop
+                        AsyncImage(url: url) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geo.size.width, height: geo.size.height + 200)
+                                .clipped()
+                                .blur(radius: 25)
+                                .overlay(Color.black.opacity(0.5))
+                                .offset(y: -200)
+                        } placeholder: {
+                            Color.black.opacity(0.5)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
+                    } else {
+                        Color.gray.opacity(0.4)
                             .frame(width: geo.size.width, height: geo.size.height + 200)
-                            .clipped()
-                            .blur(radius: 25)
-                            .overlay(Color.black.opacity(0.5))
                             .offset(y: -200)
-                    } placeholder: {
-                        Color.black.opacity(0.5)
-                            .frame(width: geo.size.width, height: geo.size.height)
                     }
-                } else {
-                    Color.black.opacity(0.5)
-                        .frame(width: geo.size.width, height: geo.size.height)
                 }
             }
             .allowsHitTesting(false)
@@ -54,7 +74,7 @@ struct BigMovieCarousel: View {
                                     } placeholder: {
                                         RoundedRectangle(cornerRadius: 12)
                                             .fill(Color.gray.opacity(0.3))
-                                            .frame(height: 300)
+                                            .frame(width: 200, height: 300)
                                     }
                                 }
 
