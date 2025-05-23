@@ -14,18 +14,10 @@ protocol APIService {
     func fetchAllMovies(page: Int) -> Observable<[Movie]>
     func fetchMovieTrailer(movieId: Int) -> Observable<[Trailer]>
     func fetchMovieReviews(movieId: Int) -> Observable<[UserReview]>
+    func searchMovies(query: String) -> Observable<[Movie]>
 }
 
-class APIServiceImpl : APIService {
-//    func fetchPopularFilms() -> Observable<[Movie]> {
-//        let response : Observable<MovieResponse?> = HttpHelper.request("/movie/popular?", method: .get)
-//        
-//        return response.map { movieResponse in
-//            guard let movieResponse = movieResponse else { return [] }
-//            return movieResponse.results
-//        }
-//    }
-    
+class APIServiceImpl : APIService {    
     func fetchAllMovies(page: Int) -> Observable<[Movie]> {
         let endpoint = "/movie/popular?page=\(page)&"
         let response: Observable<MovieResponse?> = HttpHelper.request(endpoint, method: .get)
@@ -63,6 +55,18 @@ class APIServiceImpl : APIService {
         return response.map { reviewResponse in
             guard let reviewResponse = reviewResponse else { return [] }
             return reviewResponse.results
+        }
+    }
+    
+    func searchMovies(query: String) -> Observable<[Movie]> {
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let endpoint = "/search/movie?query=\(encodedQuery)&"
+        
+        let response: Observable<MovieResponse?> = HttpHelper.request(endpoint, method: .get)
+        
+        return response.map { searchResponse in
+            guard let searchResponse = searchResponse else { return [] }
+            return searchResponse.results
         }
     }
 }

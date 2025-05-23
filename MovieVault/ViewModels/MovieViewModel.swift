@@ -18,6 +18,7 @@ class MovieViewModel : ObservableObject {
     @Published var topRatedList: [Movie] = []
     @Published var trendingWeeklyList: [Movie] = []
     @Published var allMovies: [Movie] = []
+    @Published var searchResults: [Movie] = []
     
     @Published var failedFetchMessage: String?
     @Published var successMessage: String?
@@ -78,6 +79,25 @@ class MovieViewModel : ObservableObject {
             })
             .disposed(by: disposeBag)
     }
+    
+    func searchMovies(by query: String) {
+        guard !query.trimmingCharacters(in: .whitespaces).isEmpty else {
+            self.searchResults = []
+            return
+        }
+        
+        movieService.searchMovies(query: query)
+            .subscribe(onNext: { [weak self] results in
+                self?.searchResults = results
+            }, onError: { [weak self] error in
+                self?.handleError(error)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func clearSearchResults() {
+        self.searchResults = []
+    }
 
     
     //MARK: HANDLE ERROR
@@ -91,41 +111,4 @@ class MovieViewModel : ObservableObject {
             }
         }
     }
-    
-    
-    
-//    func fetchPopularFilms(page: Int = 0, limit: Int = 0){
-//        movieService.fetchPopularFilms()
-//            .do(
-//                onSubscribe: { [weak self] in
-//                    self?.isLoading = true
-//                },
-//                onDispose: { [weak self] in
-//                    self?.isLoading = false
-//                }
-//            )
-//            .subscribe(
-//                onNext: { [weak self] (list : [Movie]?) in
-//                    guard let list else { return }
-//                    self?.popularMovieList = list
-//                    self?.failedFetchMessage = nil
-//                },
-//                onError: { error in
-//                    if let nsError = error as NSError?{
-//                        if nsError.code == 401 {
-//                            print("Status code: \(nsError.code)")
-//                            self.alertData = AlertData(
-//                                statusCode: nsError.code,
-//                                statusMessage: nsError.localizedDescription
-//                            )
-//                            self.showAlert = true
-//                        }
-//                        else {
-//                            self.failedFetchMessage = nsError.domain
-//                        }
-//                    }
-//                }
-//            )
-//            .disposed(by: disposeBag)
-//    }
 }
