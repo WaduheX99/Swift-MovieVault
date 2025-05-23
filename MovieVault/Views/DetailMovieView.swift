@@ -26,7 +26,7 @@ struct DetailMovieView: View {
                     if showTrailerPlayer,
                        let trailer = trailerViewModel.trailers.first,
                        let trailerURL = URL(string: "https://www.youtube.com/embed/\(trailer.key)?autoplay=1&playsinline=1&modestbranding=1&showinfo=0&controls=1") {
-
+                        
                         WebView(url: trailerURL)
                             .frame(height: 220)
                             .cornerRadius(12)
@@ -38,11 +38,31 @@ struct DetailMovieView: View {
                             AsyncImage(url: url) { image in
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(height: 220)
+                                    .clipped()
                             } placeholder: {
                                 Rectangle()
                                     .foregroundColor(.gray.opacity(0.3))
+                                    .frame(height: 220)
                             }
+                        } else if let poster = movie.posterPath,
+                                  let url = URL(string: "https://image.tmdb.org/t/p/w500\(poster)") {
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(height: 220)
+                                    .clipped()
+                            } placeholder: {
+                                Rectangle()
+                                    .foregroundColor(.gray.opacity(0.3))
+                                    .frame(height: 220)
+                            }
+                        } else {
+                            Rectangle()
+                                .foregroundColor(.gray.opacity(0.3))
+                                .frame(height: 220)
                         }
 
                         if !trailerViewModel.trailers.isEmpty {
@@ -59,11 +79,18 @@ struct DetailMovieView: View {
                                     .shadow(radius: 4)
                             }
                         } else {
-                            Text("Trailer tidak tersedia")
-                                .foregroundColor(.secondary)
+                            Text("Trailer not found")
+                                .fontWeight(.semibold)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(Color.white.opacity(0.85))
+                                .foregroundColor(.black)
+                                .clipShape(Capsule())
+                                .shadow(radius: 4)
                         }
                     }
                 }
+
 
                 // MARK: - Title & Year
                 VStack(alignment: .leading, spacing: 8) {
@@ -108,9 +135,18 @@ struct DetailMovieView: View {
                                 .font(.title3)
                                 .fontWeight(.bold)
                         }
-                        Text(movie.overview)
-                            .font(.footnote)
-                            .foregroundColor(.primary)
+                        if movie.overview.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Text("No overview available")
+                                .foregroundColor(.secondary)
+                                .italic()
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, minHeight: 80)
+                        } else {
+                            Text(movie.overview)
+                                .font(.footnote)
+                                .foregroundColor(.primary)
+                        }
+
                     }
                     .padding(.horizontal)
                 }
@@ -169,7 +205,10 @@ struct DetailMovieView: View {
                     } else if reviewViewModel.reviews.isEmpty {
                         Text("No reviews available")
                             .foregroundColor(.secondary)
-                            .padding()
+                            .italic()
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, minHeight: 80)
+
                     } else {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 16) {

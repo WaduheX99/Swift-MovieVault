@@ -30,6 +30,18 @@ struct MovieCardView: View {
                                 .frame(width: width, height: width * 1.5)
                                 .cornerRadius(12)
                         }
+                    } else {
+                        ZStack {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: width, height: width * 1.5)
+                                .cornerRadius(12)
+                            Text("Poster not found")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                        }
                     }
 
                     HStack(spacing: 4) {
@@ -60,5 +72,7 @@ struct MovieCardView: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
+
+
 
 
