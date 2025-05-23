@@ -11,7 +11,7 @@ import SwiftUI
 struct MovieVaultApp: App {
     var body: some Scene {
         WindowGroup {
-            MainView()
+            SplashView()
         }
     }
 }
