@@ -84,9 +84,10 @@ struct MainView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Text("MV")
-                        .font(.largeTitle.bold())
-                        .foregroundColor(Color(.orange))
+                    Image("MV_Logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 80, height: 80)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -94,7 +95,7 @@ struct MainView: View {
                         isSearching = true
                     }) {
                         Image(systemName: "magnifyingglass")
-                            .font(.title2)
+                            .font(.title2.bold())
                             .foregroundColor(Color(.orange))
                     }
                 }
