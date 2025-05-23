@@ -77,6 +77,7 @@ enum MovieListCategory {
     case nowPlaying
     case topRated
     case trendingWeekly
+    case upcoming
     
     var endpoint: String {
         switch self {
@@ -84,6 +85,7 @@ enum MovieListCategory {
         case .nowPlaying: return "/movie/now_playing?"
         case .topRated: return "/movie/top_rated?"
         case .trendingWeekly: return "/trending/movie/week?"
+        case .upcoming: return "/movie/upcoming?"
         }
     }
 }

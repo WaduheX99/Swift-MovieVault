@@ -17,6 +17,7 @@ class MovieViewModel : ObservableObject {
     @Published var nowPlayingList: [Movie] = []
     @Published var topRatedList: [Movie] = []
     @Published var trendingWeeklyList: [Movie] = []
+    @Published var upcomingList: [Movie] = []
     @Published var allMovies: [Movie] = []
     @Published var searchResults: [Movie] = []
     
@@ -55,6 +56,8 @@ class MovieViewModel : ObservableObject {
                     self.topRatedList = list
                 case .trendingWeekly:
                     self.trendingWeeklyList = list
+                case .upcoming:
+                    self.upcomingList = list
                 }
             }, onError: { [weak self] error in
                 self?.handleError(error)
