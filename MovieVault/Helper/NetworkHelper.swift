@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-class NetworkMonitor: ObservableObject {
+class NetworkHelper: ObservableObject {
     private var monitor: NWPathMonitor
     private var queue = DispatchQueue(label: "NetworkMonitor")
 
