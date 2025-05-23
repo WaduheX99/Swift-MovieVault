@@ -31,14 +31,14 @@ struct MainView: View {
                     MovieCategorySection(title: "Now Playing", movies: viewModel.nowPlayingList)
                         .padding(.top, 60)
                     
-                    // Section: Popular
-                    MovieCategorySection(title: "Popular", movies: viewModel.popularMovieList)
-                    
                     // Section: Top Rated
                     MovieCategorySection(title: "Top Picks", movies: viewModel.topRatedList)
                     
                     // Section: Trending This Week
                     MovieCategorySection(title: "Weekly Trending", movies: viewModel.trendingWeeklyList)
+                    
+                    // Section: Upcoming
+                    MovieCategorySection(title: "Upcoming", movies: viewModel.upcomingList)
                     
                     // Section : Discover More
                     AllMoviesSection(viewModel: viewModel)
@@ -77,6 +77,7 @@ struct MainView: View {
                 viewModel.fetchMoviesByCategory(for: .nowPlaying)
                 viewModel.fetchMoviesByCategory(for: .topRated)
                 viewModel.fetchMoviesByCategory(for: .trendingWeekly)
+                viewModel.fetchMoviesByCategory(for: .upcoming)
                 viewModel.fetchAllMoviesNextPage()
 
             }
@@ -85,6 +86,7 @@ struct MainView: View {
                 viewModel.fetchMoviesByCategory(for: .nowPlaying)
                 viewModel.fetchMoviesByCategory(for: .topRated)
                 viewModel.fetchMoviesByCategory(for: .trendingWeekly)
+                viewModel.fetchMoviesByCategory(for: .upcoming)
                 viewModel.fetchAllMoviesNextPage()
 
             }
